@@ -8,12 +8,31 @@ import img22 from '../1.jpg.jpg'
 
 
 
-
 function Comp3(props) {
     const [Data, setData] = useState([]);
     const [searchText, setSearchText] = useState("");
     const [updateTask, setupdateTask] = useState("")
-    console.log(updateTask)
+    const [Task, setTask] = useState([]);
+    const [Val, setVal] = useState([]);
+    const [checked, setChecked] = useState(false);
+    const [selectedItems, setSelectedItems] = useState([])
+    const [isChecked, setisChecked]= useState([]);
+    
+
+   console.log(isChecked)
+
+
+
+
+
+    const obj = {
+        method: 'DELETE',
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify(isChecked),
+    };
+
 
     useEffect(() => {
         GetallData()
@@ -29,7 +48,6 @@ function Comp3(props) {
             const data = await response.json();
             setData(data);
         }
-
         catch (err) {
             console.log(err)
         };
@@ -44,9 +62,74 @@ function Comp3(props) {
         setupdateTask(searchText)
     }
 
-    
+
+    const handleSearchh = () => {
+        const new_array= [];
+       if(Data.length == new_array.length)
+       setChecked(false)
+        GetallData(Data);
+    }
 
 
+
+
+
+    const DeleteTask = async () => {
+        try {
+            const response = await fetch(`http://localhost:3000/Tasks/${Val}`, { method: 'DELETE' },obj)
+            console.log(response)
+            if (response.ok) {
+                console.log("success")
+            }
+            else {
+                console.log("failed")
+            }
+
+        } catch (error) {
+
+        }
+
+    }
+    // const  checkboxHandler =(e)=>{
+    //     let isSelected = e.target.checked;
+    //     let value = parseInt(e.target.value);
+    //     setVal(value)
+    //     if( isSelected ){
+	// 		setSelectedItems( [...selectedItems, value ] )
+	// 	}
+        
+    //     else{
+	// 		setSelectedItems((prevData)=>{
+	// 			return prevData.filter((id)=>{
+	// 				return id!==value
+	// 			})
+	// 		})
+	// 	}
+    // }
+    const handlecheckbox = (e)=>{
+        const {value, checked}= e.target;
+       
+        if(checked)
+        {
+          setisChecked([...isChecked, value]);
+        } else{
+          setisChecked(isChecked.filter( (e)=>e!== value));
+        }
+
+      }
+
+      const alldelete= async()=>{
+       // console.log(isChecked);
+       try {
+        const response = await fetch(`http://localhost:3000/Tasks/${isChecked}`,obj)
+       console.log(response)
+      
+        
+       } catch (error) {
+        console.log(error)
+       }
+
+      }
 
     return (
         <div className='container'>
@@ -128,10 +211,7 @@ function Comp3(props) {
                                         }
                                     ]
                                 }}
-
-
                             />
-
 
 
                         </div>
@@ -168,30 +248,46 @@ function Comp3(props) {
 
                 </div>
 
-                
+
                 <div className='col-lg-4 cmp '>
                     <div className='container'>
                         <h4 className='comp1 mt-3'>Add Todo</h4>
-                        <button type="button" className="btn btn todo1 text-white">Archieve</button>
+                        <button type="button" className="btn btn todo1 text-white"  onClick={ alldelete}  >Archieve</button>
                         <div className='table scrollbar scrollbar-primary mt-3'>
-                            <tr>
+
+                         
+
+                           <tr>
                                 <th></th>
-                            </tr>
+                            </tr> 
                             {
                                 Data.map((item) => {
                                     return <tr key={item.id}>
-                                        <td className='todo2'>
-                                            <input className="form-check-input todo4" type="checkbox" value="" />
-                                            <label className="form-check-label todo3" >
+                                        {/* <td className=''>
+                                            <label className="form-check-label todo3 " htmlFor={item.texts}
+                                                // onChange={(e)=> handleSearchh(e.target.value)}
+                                                onChange={checkboxHandler}
+                                               
+                                            >
+                                                <input className="form-check-input " type="checkbox" id={item.text} value={item.id} checked={ selectedItems.includes( item.id )}/>
+                                                {item.text}
+                                            </label>
+                                        </td> */}
+                                           <td className=''>
+                                            <label className="form-check-label todo3 " htmlFor={item.texts}
+                                                // onChange={(e)=> handleSearchh(e.target.value)}
+                                                onChange={(e)=>handlecheckbox(e)}
+                                               
+                                            >
+                                                <input className="form-check-input " type="checkbox" id={item.text} value={item.id}  checked={ item.isChecked}/>
                                                 {item.text}
                                             </label>
                                         </td>
 
-
                                     </tr>
 
                                 })
-                            }
+                            } 
                             <tr>
                                 <td className='todo2'>
                                     <input className="form-check-input todo4" type="checkbox" value="" />
@@ -206,23 +302,11 @@ function Comp3(props) {
                             <div className='container'>
                                 <input type="text" className="todo6 " id="exampleInputEmail1" placeholder="Add new todo" onChange={handleSearch} />
                                 <button type="button" className="btn btn todo5  text-white text-center" onClick={onAddTask}>Add</button>
-
                             </div>
-
                         </div>
-
-
                     </div>
-                    <br/>
-
-
+                    <br />
                 </div>
-
-
-
-
-
-
 
                 {/* <div className='col-lg-4 cmp '>
                     <div className='container'>
@@ -279,82 +363,82 @@ function Comp3(props) {
                         <h4 className='comp1 mt-3'>Chat Box</h4>
 
                         <div className='scrollbar scrollbar-primary  mt-5'>
-                        <div className=' d-flex mt-4'>
-                            <div>
-                                <img src={img22} alt='' className='chat1' />
-                                <p>10:00</p>
+                            <div className=' d-flex mt-4'>
+                                <div>
+                                    <img src={img22} alt='' className='chat1' />
+                                    <p>10:00</p>
+                                </div>
+                                <div className='chat2'>
+                                    <h6 className='chat3 mt-1'>John Deo</h6>
+                                    <p className='chat4'>Hello!</p>
+                                </div>
                             </div>
-                            <div className='chat2'>
-                                <h6 className='chat3 mt-1'>John Deo</h6>
-                                <p className='chat4'>Hello!</p>
-                            </div>
-                        </div>
 
-                        <div className='chat7 d-flex mt-1'>
-                            <div className='chat55'>
-                                <h6 className='chat33 mt-1 text-white text-end'>Smith</h6>
-                                <p className='chat4 text-white'>Hi, How are you? What about our next meeting?</p>
+                            <div className='chat7 d-flex mt-1'>
+                                <div className='chat55'>
+                                    <h6 className='chat33 mt-1 text-white text-end'>Smith</h6>
+                                    <p className='chat4 text-white'>Hi, How are you? What about our next meeting?</p>
+                                </div>
+                                <div>
+                                    <img src={img22} alt='' className='chat1' />
+                                    <p>10:01</p>
+                                </div>
                             </div>
-                            <div>
-                                <img src={img22} alt='' className='chat1' />
-                                <p>10:01</p>
-                            </div>
-                        </div>
 
-                        <div className=' d-flex mt-4'>
-                            <div>
-                                <img src={img22} alt='' className='chat1' />
-                                <p>10:01</p>
+                            <div className=' d-flex mt-4'>
+                                <div>
+                                    <img src={img22} alt='' className='chat1' />
+                                    <p>10:01</p>
+                                </div>
+                                <div className='chat6'>
+                                    <h6 className='chat3 mt-1'>John Deo</h6>
+                                    <p className='chat4'>Yeah everything fine!</p>
+                                </div>
                             </div>
-                            <div className='chat6'>
-                                <h6 className='chat3 mt-1'>John Deo</h6>
-                                <p className='chat4'>Yeah everything fine!</p>
-                            </div>
-                        </div>
 
-                        <div className='chat7 d-flex mt-2'>
-                            <div className='chat55'>
-                                <h6 className='chat33 mt-1 text-white text-end'>Smith</h6>
-                                <p className='chat4 text-white'>Wow, Its great that's..!!</p>
+                            <div className='chat7 d-flex mt-2'>
+                                <div className='chat55'>
+                                    <h6 className='chat33 mt-1 text-white text-end'>Smith</h6>
+                                    <p className='chat4 text-white'>Wow, Its great that's..!!</p>
+                                </div>
+                                <div>
+                                    <img src={img22} alt='' className='chat1' />
+                                    <p>10:02</p>
+                                </div>
                             </div>
-                            <div>
-                                <img src={img22} alt='' className='chat1' />
-                                <p>10:02</p>
-                            </div>
-                        </div>
 
-                        <div className=' d-flex mt-4'>
-                            <div>
-                                <img src={img22} alt='' className='chat1' />
-                                <p>10:02</p>
+                            <div className=' d-flex mt-4'>
+                                <div>
+                                    <img src={img22} alt='' className='chat1' />
+                                    <p>10:02</p>
+                                </div>
+                                <div className='chat8'>
+                                    <h6 className='chat3 mt-1'>John Deo</h6>
+                                    <p className='chat4'>Doing Better now i am thinking about that..</p>
+                                </div>
                             </div>
-                            <div className='chat8'>
-                                <h6 className='chat3 mt-1'>John Deo</h6>
-                                <p className='chat4'>Doing Better now i am thinking about that..</p>
-                            </div>
-                        </div>
 
-                        <div className='chat7 d-flex mt-4'>
-                            <div className='chat55'>
-                                <h6 className='chat33 mt-1 text-white text-end'>Smith</h6>
-                                <p className='chat4 text-white'>Ohk! Bro that's good!!</p>
+                            <div className='chat7 d-flex mt-4'>
+                                <div className='chat55'>
+                                    <h6 className='chat33 mt-1 text-white text-end'>Smith</h6>
+                                    <p className='chat4 text-white'>Ohk! Bro that's good!!</p>
+                                </div>
+                                <div>
+                                    <img src={img22} alt='' className='chat1' />
+                                    <p>10:02</p>
+                                </div>
                             </div>
-                            <div>
-                                <img src={img22} alt='' className='chat1' />
-                                <p>10:02</p>
-                            </div>
-                        </div>
 
-                        <div className=' d-flex mt-4'>
-                            <div>
-                                <img src={img22} alt='' className='chat1' />
-                                <p>10:03</p>
+                            <div className=' d-flex mt-4'>
+                                <div>
+                                    <img src={img22} alt='' className='chat1' />
+                                    <p>10:03</p>
+                                </div>
+                                <div className='chat6'>
+                                    <h6 className='chat3 mt-1'>John Deo</h6>
+                                    <p className='chat4'>Yeah Bruh!!</p>
+                                </div>
                             </div>
-                            <div className='chat6'>
-                                <h6 className='chat3 mt-1'>John Deo</h6>
-                                <p className='chat4'>Yeah Bruh!!</p>
-                            </div>
-                        </div>
 
 
                         </div>
@@ -367,7 +451,7 @@ function Comp3(props) {
 
                         </div>
 
-                      
+
 
 
 
@@ -375,6 +459,7 @@ function Comp3(props) {
 
                     </div>
                 </div>
+
             </div>
 
         </div>
